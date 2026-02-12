@@ -1,0 +1,94 @@
+{
+  "properties": [
+    {
+      "id": "1",
+      "name": "Ocean View Private Villa",
+      "type": "Villa",
+      "price": 250,
+      "capacity": 6,
+      "city": "Miami",
+      "image": "https://images.unsplash.com/photo-1505691938895-1758d7feb511"
+    },
+    {
+      "id": "2",
+      "name": "Mountain Retreat Cabin",
+      "type": "Vacation Home",
+      "price": 180,
+      "capacity": 4,
+      "city": "Denver",
+      "image": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae"
+    },
+    {
+      "id": "3",
+      "name": "Luxury Hotel Suite",
+      "type": "Hotel Room",
+      "price": 320,
+      "capacity": 2,
+      "city": "New York",
+      "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945"
+    },
+    {
+      "id": "4",
+      "name": "Beachfront Resort",
+      "type": "Hotel Room",
+      "price": 280,
+      "capacity": 4,
+      "city": "Miami",
+      "image": "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9"
+    },
+    {
+      "id": "5",
+      "name": "Urban Loft",
+      "type": "Apartment",
+      "price": 200,
+      "capacity": 2,
+      "city": "New York",
+      "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
+    },
+    {
+      "id": "6",
+      "name": "Forest Cabin",
+      "type": "Vacation Home",
+      "price": 150,
+      "capacity": 3,
+      "city": "Denver",
+      "image": "https://images.unsplash.com/photo-1449844908441-8829872d2607"
+    }
+  ],
+  "bookings": [],
+  "users": [
+    {
+      "email": "admin@example.com",
+      "password": "admin",
+      "isAdmin": true,
+      "id": "efb0"
+    },
+    {
+      "email": "user@example.com",
+      "password": "user123",
+      "isAdmin": false,
+      "id": "aaa9"
+    },
+    {
+      "id": "f5e7",
+      "name": "anto",
+      "email": "anto@gmail.com",
+      "password": "123",
+      "isAdmin": false
+    },
+    {
+      "id": "ff78",
+      "name": "anto",
+      "email": "anto@gmail.com",
+      "password": "123",
+      "isAdmin": false
+    },
+    {
+      "id": "3636",
+      "name": "sat",
+      "email": "sat@gmail.com",
+      "password": "123",
+      "isAdmin": false
+    }
+  ]
+}
