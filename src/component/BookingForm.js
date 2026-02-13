@@ -49,7 +49,12 @@ function BookingForm({ properties, addBooking }) {
       return;
     }
 
-    const selectedProperty = filteredProperties.find(p => p.id === Number(formData.propertyId));
+    const selectedProperty = filteredProperties.find(p => String(p.id) === String(formData.propertyId));
+
+    if (!selectedProperty) {
+      alert("Please select a valid property.");
+      return;
+    }
 
     const confirmBooking = window.confirm(
       `Confirm your booking:\n\nProperty: ${selectedProperty.name}\nCity: ${selectedProperty.city}\nDates: ${formData.startDate} to ${formData.endDate}\nPrice: $${selectedProperty.price}\n\nClick OK to confirm or Cancel to review.`
@@ -164,7 +169,7 @@ function BookingForm({ properties, addBooking }) {
           >
             <option value="">Select Property</option>
             {filteredProperties.map((property) => (
-              <option key={property.id} value={property.id}>
+              <option key={property.id} value={String(property.id)}>
                 {property.name} - {property.city} (${property.price})
               </option>
             ))}

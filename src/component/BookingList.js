@@ -3,7 +3,12 @@ import React from "react";
 function BookingList({ bookings, cancelBooking, properties }) {
   const handleCancel = (id) => {
     const booking = bookings.find(b => b.id === id);
-    const property = properties.find(p => p.id === booking.propertyId);
+    const property = properties.find(p => String(p.id) === String(booking.propertyId));
+
+    if (!property) {
+      alert("Property not found.");
+      return;
+    }
 
     const confirmCancel = window.confirm(
       `Are you sure you want to cancel this booking?\n\nProperty: ${property.name}\nCity: ${property.city}\nDate: ${booking.date}\nCheck-in: ${booking.start}\nCheck-out: ${booking.end}\n\nThis action cannot be undone.`
@@ -23,7 +28,7 @@ function BookingList({ bookings, cancelBooking, properties }) {
       ) : (
         <div className="row">
           {bookings.map((booking) => {
-            const property = properties.find((p) => p.id === booking.propertyId);
+            const property = properties.find((p) => String(p.id) === String(booking.propertyId));
             return (
               <div key={booking.id} className="col-md-6 mb-3">
                 <div className="card">

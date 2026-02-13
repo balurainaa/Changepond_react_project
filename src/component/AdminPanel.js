@@ -1,11 +1,17 @@
 import React from "react";
+import AdminPropertyManager from "./AdminPropertyManager";
 
-function AdminPanel({ bookings, properties, cancelBooking }) {
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-
+function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, updateProperty, deleteProperty }) {
   return (
     <div className="mb-5">
       <h2 className="mb-4">Admin Panel</h2>
+
+      <AdminPropertyManager 
+        properties={properties}
+        addProperty={addProperty}
+        updateProperty={updateProperty}
+        deleteProperty={deleteProperty}
+      />
 
       <h3>All Bookings</h3>
       <table className="table table-striped">
@@ -20,7 +26,7 @@ function AdminPanel({ bookings, properties, cancelBooking }) {
         </thead>
         <tbody>
           {bookings.map((booking) => {
-            const property = properties.find(p => p.id === booking.propertyId);
+            const property = properties.find(p => String(p.id) === String(booking.propertyId));
             return (
               <tr key={booking.id}>
                 <td>{booking.id}</td>
@@ -33,30 +39,6 @@ function AdminPanel({ bookings, properties, cancelBooking }) {
               </tr>
             );
           })}
-        </tbody>
-      </table>
-
-      <h3>All Properties</h3>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Price</th>
-            <th>Capacity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {properties.map((property) => (
-            <tr key={property.id}>
-              <td>{property.id}</td>
-              <td>{property.name}</td>
-              <td>{property.type}</td>
-              <td>${property.price}</td>
-              <td>{property.capacity}</td>
-            </tr>
-          ))}
         </tbody>
       </table>
 

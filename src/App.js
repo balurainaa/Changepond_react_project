@@ -14,15 +14,33 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const properties = data.properties;
+  const [properties, setProperties] = useState(data.properties);
 
   const [bookings, setBookings] = useState(data.bookings);
+
+  const [users, setUsers] = useState(data.users);
 
   // Load saved bookings
   useEffect(() => {
     const saved = localStorage.getItem("bookings");
     if (saved) {
       setBookings(JSON.parse(saved));
+    }
+  }, []);
+
+  // Load saved properties
+  useEffect(() => {
+    const saved = localStorage.getItem("properties");
+    if (saved) {
+      setProperties(JSON.parse(saved));
+    }
+  }, []);
+
+  // Load saved users
+  useEffect(() => {
+    const saved = localStorage.getItem("users");
+    if (saved) {
+      setUsers(JSON.parse(saved));
     }
   }, []);
 
@@ -40,6 +58,16 @@ function App() {
   useEffect(() => {
     localStorage.setItem("bookings", JSON.stringify(bookings));
   }, [bookings]);
+
+  // Save properties
+  useEffect(() => {
+    localStorage.setItem("properties", JSON.stringify(properties));
+  }, [properties]);
+
+  // Save users
+  useEffect(() => {
+    localStorage.setItem("users", JSON.stringify(users));
+  }, [users]);
 
   const addBooking = (newBooking) => {
     const overlap = bookings.some(
@@ -61,6 +89,23 @@ function App() {
     setBookings(bookings.filter((booking) => booking.id !== id));
   };
 
+  const addProperty = (newProperty) => {
+    const id = Math.max(...properties.map(p => p.id), 0) + 1;
+    setProperties([...properties, { ...newProperty, id }]);
+  };
+
+  const updateProperty = (id, updatedProperty) => {
+    setProperties(
+      properties.map((property) =>
+        property.id === id ? { ...property, ...updatedProperty } : property
+      )
+    );
+  };
+
+  const deleteProperty = (id) => {
+    setProperties(properties.filter((property) => property.id !== id));
+  };
+
   return (
     <Router>
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
@@ -72,7 +117,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/book" element={isLoggedIn ? <BookingForm properties={properties} addBooking={addBooking} /> : <Navigate to="/login" />} />
           <Route path="/bookings" element={isLoggedIn ? <BookingList bookings={bookings} cancelBooking={cancelBooking} properties={properties} /> : <Navigate to="/login" />} />
-          <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPanel bookings={bookings} properties={properties} cancelBooking={cancelBooking} /> : <Navigate to="/" />} />
+          <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPanel bookings={bookings} properties={properties} users={users} cancelBooking={cancelBooking} addProperty={addProperty} updateProperty={updateProperty} deleteProperty={deleteProperty} /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

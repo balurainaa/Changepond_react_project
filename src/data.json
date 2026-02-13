@@ -89,6 +89,20 @@
       "email": "sat@gmail.com",
       "password": "123",
       "isAdmin": false
+    },
+    {
+      "id": "7c10",
+      "name": "Admin1",
+      "email": "admin1@gmail.com",
+      "password": "admin1",
+      "isAdmin": false
+    },
+    {
+      "id": "b56a",
+      "name": "Balu S",
+      "email": "balus@gmail.com",
+      "password": "balus",
+      "isAdmin": false
     }
   ]
 }
