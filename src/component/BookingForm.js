@@ -9,7 +9,7 @@ function BookingForm({ properties, addBooking }) {
   });
 
   const [filters, setFilters] = useState({
-    city: "",
+    state: "",
     minPrice: "",
     maxPrice: "",
   });
@@ -19,16 +19,23 @@ function BookingForm({ properties, addBooking }) {
   };
 
   const filteredProperties = properties.filter((property) => {
-    const matchesCity = !filters.city || property.city === filters.city;
+    const matchesState = !filters.state || property.state === filters.state;
     const matchesMinPrice = !filters.minPrice || property.price >= Number(filters.minPrice);
     const matchesMaxPrice = !filters.maxPrice || property.price <= Number(filters.maxPrice);
-    return matchesCity && matchesMinPrice && matchesMaxPrice;
+    return matchesState && matchesMinPrice && matchesMaxPrice;
   });
 
-  const cities = [...new Set(properties.map(p => p.city))];
+  const states = [...new Set(properties.map((p) => p.state))];
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // helper to return yyyy-mm-dd for today
+  const todayIso = () => {
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    return d.toISOString().split('T')[0];
   };
 
   const handleSubmit = (e) => {
@@ -57,7 +64,7 @@ function BookingForm({ properties, addBooking }) {
     }
 
     const confirmBooking = window.confirm(
-      `Confirm your booking:\n\nProperty: ${selectedProperty.name}\nCity: ${selectedProperty.city}\nDates: ${formData.startDate} to ${formData.endDate}\nPrice: $${selectedProperty.price}\n\nClick OK to confirm or Cancel to review.`
+      `Confirm your booking:\n\nProperty: ${selectedProperty.name}\nState: ${selectedProperty.state}\nDates: ${formData.startDate} to ${formData.endDate}\nPrice: ₹${selectedProperty.price}\n\nClick OK to confirm or Cancel to review.`
     );
 
     if (!confirmBooking) {
@@ -89,17 +96,17 @@ function BookingForm({ properties, addBooking }) {
         <h4>Filter Properties</h4>
         <div className="row g-3">
           <div className="col-md-4">
-            <label className="form-label">City</label>
+            <label className="form-label">State</label>
             <select
               className="form-select"
-              name="city"
-              value={filters.city}
+              name="state"
+              value={filters.state}
               onChange={handleFilterChange}
             >
-              <option value="">All Cities</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
+              <option value="">All States</option>
+              {states.map((s) => (
+                <option key={s} value={s}>
+                  {s}
                 </option>
               ))}
             </select>
@@ -146,7 +153,7 @@ function BookingForm({ properties, addBooking }) {
                 <div className="card-body">
                   <h5 className="card-title">{property.name}</h5>
                   <p className="card-text">
-                    {property.city} - ${property.price} per night
+                    {property.state} - ₹{property.price} per night
                   </p>
                   <p className="card-text">
                     Type: {property.type}, Capacity: {property.capacity}
@@ -170,7 +177,7 @@ function BookingForm({ properties, addBooking }) {
             <option value="">Select Property</option>
             {filteredProperties.map((property) => (
               <option key={property.id} value={String(property.id)}>
-                {property.name} - {property.city} (${property.price})
+                {property.name} - {property.state} (₹{property.price})
               </option>
             ))}
           </select>
@@ -194,7 +201,16 @@ function BookingForm({ properties, addBooking }) {
             className="form-control"
             name="startDate"
             value={formData.startDate}
-            onChange={handleChange}
+            onChange={(e) => {
+              // if endDate is before new startDate, clear endDate to avoid invalid range
+              const newStart = e.target.value;
+              if (formData.endDate && newStart && formData.endDate < newStart) {
+                setFormData({ ...formData, startDate: newStart, endDate: '' });
+              } else {
+                setFormData({ ...formData, startDate: newStart });
+              }
+            }}
+            min={todayIso()}
           />
         </div>
 
@@ -206,6 +222,7 @@ function BookingForm({ properties, addBooking }) {
             name="endDate"
             value={formData.endDate}
             onChange={handleChange}
+            min={formData.startDate || todayIso()}
           />
         </div>
 

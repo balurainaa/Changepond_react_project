@@ -25,16 +25,16 @@ function Register() {
       return;
     }
 
-    // Get existing users from localStorage
+    
     const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Check if user already exists
+    
     if (existingUsers.find((u) => u.email === formData.email)) {
       setError("User already exists");
       return;
     }
 
-    // Add new user
+    
     const newUser = {
       name: formData.name,
       email: formData.email,

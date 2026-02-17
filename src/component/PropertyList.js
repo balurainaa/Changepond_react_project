@@ -16,7 +16,7 @@ function PropertyList({ properties, isLoggedIn }) {
             />
             <Carousel.Caption>
               <h3>{property.name}</h3>
-              <p>{property.type} - ${property.price} / Night</p>
+              <p>{property.type} - ₹{property.price} / Night</p>
             </Carousel.Caption>
           </Carousel.Item>
         ))}
@@ -37,7 +37,7 @@ function PropertyList({ properties, isLoggedIn }) {
                 <p className="card-text">
                   Type: {property.type} <br />
                   Capacity: {property.capacity} Guests <br />
-                  Price: ${property.price} / Night
+                  Price: ₹{property.price} / Night
                 </p>
                 <Link to={isLoggedIn ? "/book" : "/login"} className="btn btn-primary">
                   {isLoggedIn ? "Book Now" : "Login to Book"}

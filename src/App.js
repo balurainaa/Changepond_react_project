@@ -20,7 +20,7 @@ function App() {
 
   const [users, setUsers] = useState(data.users);
 
-  // Load saved bookings
+  
   useEffect(() => {
     const saved = localStorage.getItem("bookings");
     if (saved) {
@@ -28,7 +28,7 @@ function App() {
     }
   }, []);
 
-  // Load saved properties
+  
   useEffect(() => {
     const saved = localStorage.getItem("properties");
     if (saved) {
@@ -36,7 +36,7 @@ function App() {
     }
   }, []);
 
-  // Load saved users
+  
   useEffect(() => {
     const saved = localStorage.getItem("users");
     if (saved) {
@@ -44,7 +44,7 @@ function App() {
     }
   }, []);
 
-  // Load user session from localStorage
+  
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {
@@ -54,35 +54,63 @@ function App() {
     }
   }, []);
 
-  // Save bookings
+  
   useEffect(() => {
     localStorage.setItem("bookings", JSON.stringify(bookings));
   }, [bookings]);
 
-  // Save properties
+  
   useEffect(() => {
     localStorage.setItem("properties", JSON.stringify(properties));
   }, [properties]);
 
-  // Save users
+  
   useEffect(() => {
     localStorage.setItem("users", JSON.stringify(users));
   }, [users]);
 
   const addBooking = (newBooking) => {
-    const overlap = bookings.some(
-      (existing) =>
-        existing.propertyId === newBooking.propertyId &&
-        newBooking.startDate < existing.endDate &&
-        newBooking.endDate > existing.startDate
-    );
+    // ensure dates are valid and start is not in the past
+    try {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const s = new Date(newBooking.startDate);
+      const e = new Date(newBooking.endDate);
+      s.setHours(0,0,0,0);
+      e.setHours(0,0,0,0);
 
-    if (overlap) {
-      alert("This room is already booked for the selected dates. Please try different dates or choose another room.");
+      if (s < today) {
+        alert('Start date cannot be in the past.');
+        return;
+      }
+
+      if (s > e) {
+        alert('End date must be after or equal to start date.');
+        return;
+      }
+
+      const overlap = bookings.some((existing) => {
+        const es = new Date(existing.startDate);
+        const ee = new Date(existing.endDate);
+        es.setHours(0,0,0,0);
+        ee.setHours(0,0,0,0);
+        return (
+          existing.propertyId === newBooking.propertyId &&
+          s <= ee &&
+          e >= es
+        );
+      });
+
+      if (overlap) {
+        alert("This room is already booked for the selected dates. Please try different dates or choose another room.");
+        return;
+      }
+
+      setBookings([...bookings, { ...newBooking, id: Date.now() }]);
+    } catch (err) {
+      alert('Invalid dates provided.');
       return;
     }
-
-    setBookings([...bookings, { ...newBooking, id: Date.now() }]);
   };
 
   const cancelBooking = (id) => {
@@ -90,20 +118,51 @@ function App() {
   };
 
   const addProperty = (newProperty) => {
-    const id = Math.max(...properties.map(p => p.id), 0) + 1;
-    setProperties([...properties, { ...newProperty, id }]);
+    const maxId = Math.max(0, ...properties.map(p => Number(p.id) || 0));
+    const id = String(maxId + 1);
+    const updated = [...properties, { ...newProperty, id }];
+    setProperties(updated);
+    persistDataToServer({ properties: updated });
   };
 
   const updateProperty = (id, updatedProperty) => {
-    setProperties(
-      properties.map((property) =>
-        property.id === id ? { ...property, ...updatedProperty } : property
-      )
+    const updated = properties.map((property) =>
+      String(property.id) === String(id) ? { ...property, ...updatedProperty } : property
     );
+    setProperties(updated);
+    persistDataToServer({ properties: updated });
   };
 
   const deleteProperty = (id) => {
-    setProperties(properties.filter((property) => property.id !== id));
+    const updated = properties.filter((property) => String(property.id) !== String(id));
+    setProperties(updated);
+    persistDataToServer({ properties: updated });
+  };
+
+  const persistDataToServer = async (payload) => {
+    try {
+      await fetch('http://localhost:8000/api/save-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch (e) {
+      console.warn('Could not persist to server:', e.message);
+    }
+  };
+
+  const deleteUser = (identifier) => {
+    // identifier can be an id or index fallback
+    let updated = [];
+    if (typeof identifier === 'number') {
+      // treat as index
+      updated = users.filter((_, i) => i !== identifier);
+    } else {
+      // treat as id or email
+      updated = users.filter((u) => u.id !== identifier && u.email !== identifier);
+    }
+    setUsers(updated);
+    persistDataToServer({ users: updated });
   };
 
   return (
@@ -117,7 +176,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/book" element={isLoggedIn ? <BookingForm properties={properties} addBooking={addBooking} /> : <Navigate to="/login" />} />
           <Route path="/bookings" element={isLoggedIn ? <BookingList bookings={bookings} cancelBooking={cancelBooking} properties={properties} /> : <Navigate to="/login" />} />
-          <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPanel bookings={bookings} properties={properties} users={users} cancelBooking={cancelBooking} addProperty={addProperty} updateProperty={updateProperty} deleteProperty={deleteProperty} /> : <Navigate to="/" />} />
+          <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPanel bookings={bookings} properties={properties} users={users} cancelBooking={cancelBooking} addProperty={addProperty} updateProperty={updateProperty} deleteProperty={deleteProperty} deleteUser={deleteUser} /> : <Navigate to="/" />} />
         </Routes>
       </div>
     </Router>

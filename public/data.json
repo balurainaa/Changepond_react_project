@@ -6,7 +6,7 @@
       "type": "Villa",
       "price": 250,
       "capacity": 6,
-      "city": "Miami",
+      "state": "Florida",
       "image": "https://images.unsplash.com/photo-1505691938895-1758d7feb511"
     },
     {
@@ -15,7 +15,7 @@
       "type": "Vacation Home",
       "price": 180,
       "capacity": 4,
-      "city": "Denver",
+      "state": "Colorado",
       "image": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae"
     },
     {
@@ -24,7 +24,7 @@
       "type": "Hotel Room",
       "price": 320,
       "capacity": 2,
-      "city": "New York",
+      "state": "New York",
       "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945"
     },
     {
@@ -33,7 +33,7 @@
       "type": "Hotel Room",
       "price": 280,
       "capacity": 4,
-      "city": "Miami",
+      "state": "Florida",
       "image": "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9"
     },
     {
@@ -42,7 +42,7 @@
       "type": "Apartment",
       "price": 200,
       "capacity": 2,
-      "city": "New York",
+      "state": "New York",
       "image": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267"
     },
     {
@@ -51,7 +51,7 @@
       "type": "Vacation Home",
       "price": 150,
       "capacity": 3,
-      "city": "Denver",
+      "state": "Colorado",
       "image": "https://images.unsplash.com/photo-1449844908441-8829872d2607"
     }
   ],

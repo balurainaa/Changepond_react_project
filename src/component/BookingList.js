@@ -11,7 +11,7 @@ function BookingList({ bookings, cancelBooking, properties }) {
     }
 
     const confirmCancel = window.confirm(
-      `Are you sure you want to cancel this booking?\n\nProperty: ${property.name}\nCity: ${property.city}\nDate: ${booking.date}\nCheck-in: ${booking.start}\nCheck-out: ${booking.end}\n\nThis action cannot be undone.`
+      `Are you sure you want to cancel this booking?\n\nProperty: ${property.name}\nState: ${property.state}\nDate: ${booking.date}\nCheck-in: ${booking.start}\nCheck-out: ${booking.end}\n\nThis action cannot be undone.`
     );
 
     if (confirmCancel) {
@@ -35,10 +35,10 @@ function BookingList({ bookings, cancelBooking, properties }) {
                   <div className="card-body">
                     <h5 className="card-title">{property ? property.name : "Unknown Property"}</h5>
                     <p className="card-text">
-                      <strong>City:</strong> {property ? property.city : "Unknown"}<br />
+                      <strong>State:</strong> {property ? property.state : "Unknown"}<br />
                       <strong>Dates:</strong> {booking.startDate} to {booking.endDate}<br />
                       <strong>Booked by:</strong> {booking.name}<br />
-                      <strong>Price:</strong> ${property ? property.price : "N/A"}
+                      <strong>Price:</strong> ₹{property ? property.price : "N/A"}
                     </p>
                     <button
                       className="btn btn-danger"

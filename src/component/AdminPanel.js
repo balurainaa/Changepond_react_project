@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import AdminPropertyManager from "./AdminPropertyManager";
 
-function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, updateProperty, deleteProperty }) {
+function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, updateProperty, deleteProperty, deleteUser }) {
+  const [showPast, setShowPast] = useState(false);
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const displayedBookings = bookings.filter((booking) => {
+    if (showPast) return true;
+    try {
+      const end = new Date(booking.endDate);
+      end.setHours(0,0,0,0);
+      return end >= today;
+    } catch (e) {
+      return true;
+    }
+  });
+
   return (
     <div className="mb-5">
       <h2 className="mb-4">Admin Panel</h2>
@@ -14,6 +30,10 @@ function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, u
       />
 
       <h3>All Bookings</h3>
+      <div className="mb-3 d-flex align-items-center">
+        <label className="me-2">Show past bookings</label>
+        <input type="checkbox" checked={showPast} onChange={(e) => setShowPast(e.target.checked)} />
+      </div>
       <table className="table table-striped">
         <thead>
           <tr>
@@ -25,7 +45,7 @@ function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, u
           </tr>
         </thead>
         <tbody>
-          {bookings.map((booking) => {
+          {displayedBookings.map((booking) => {
             const property = properties.find(p => String(p.id) === String(booking.propertyId));
             return (
               <tr key={booking.id}>
@@ -48,13 +68,27 @@ function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, u
           <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={index}>
-              <td>{user.name}</td>
+            <tr key={user.id || index}>
+              <td>{user.name || '-'}</td>
               <td>{user.email}</td>
+              <td>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => {
+                    if (window.confirm('Delete this user? This will remove them from data.json.')) {
+                      // prefer id when available, fallback to index
+                      deleteUser(user.id || index);
+                    }
+                  }}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

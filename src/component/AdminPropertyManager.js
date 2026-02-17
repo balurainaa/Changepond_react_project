@@ -9,7 +9,7 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
     type: "",
     price: "",
     capacity: "",
-    city: "",
+    state: "",
     image: "",
   });
 
@@ -21,7 +21,7 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.type || !formData.price || !formData.capacity || !formData.city || !formData.image) {
+    if (!formData.name || !formData.type || !formData.price || !formData.capacity || !formData.state || !formData.image) {
       alert("Please fill in all fields");
       return;
     }
@@ -51,7 +51,7 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
       type: "",
       price: "",
       capacity: "",
-      city: "",
+      state: "",
       image: "",
     });
     setShowForm(false);
@@ -64,7 +64,7 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
       type: property.type,
       price: property.price.toString(),
       capacity: property.capacity.toString(),
-      city: property.city,
+      state: property.state,
       image: property.image,
     });
     setEditingId(property.id);
@@ -148,14 +148,14 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
             </div>
 
             <div className="form-group">
-              <label>City</label>
+              <label>State</label>
               <input
                 type="text"
-                name="city"
+                name="state"
                 className="form-control"
-                value={formData.city}
+                value={formData.state}
                 onChange={handleInputChange}
-                placeholder="e.g., Miami"
+                placeholder="e.g., Maharashtra"
               />
             </div>
 
@@ -193,7 +193,7 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
               <th>Type</th>
               <th>Price</th>
               <th>Capacity</th>
-              <th>City</th>
+              <th>State</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -203,9 +203,9 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
                 <td>{property.id}</td>
                 <td>{property.name}</td>
                 <td>{property.type}</td>
-                <td>${property.price}</td>
+                <td>₹{property.price}</td>
                 <td>{property.capacity} Guests</td>
-                <td>{property.city}</td>
+                <td>{property.state}</td>
                 <td>
                   <button
                     className="btn btn-warning btn-sm me-2"

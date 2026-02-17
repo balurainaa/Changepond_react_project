@@ -13,11 +13,11 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Get users from localStorage, fallback to data.json
+    
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     const allUsers = [...data.users, ...storedUsers];
 
-    // Validate credentials against users array
+   
     const user = allUsers.find(
       (u) => u.email === credentials.email && u.password === credentials.password
     );
@@ -25,7 +25,7 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
     if (user) {
       setIsLoggedIn(true);
       setIsAdmin(user.isAdmin);
-      // Store user data in localStorage
+      
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/");
     } else {
@@ -70,7 +70,7 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
               Don't have an account? <a href="/register">Register here</a>
             </small>
             <br />
-            <small className="text-muted">Admin login: admin@example.com / admin</small>
+            {/* <small className="text-muted">Admin login: admin@example.com / admin</small> */}
           </div>
         </div>
       </div>
