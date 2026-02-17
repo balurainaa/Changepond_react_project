@@ -2,17 +2,32 @@ import React, { useState } from "react";
 import AdminPropertyManager from "./AdminPropertyManager";
 
 function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, updateProperty, deleteProperty, deleteUser }) {
-  const [showPast, setShowPast] = useState(false);
+  const [bookingView, setBookingView] = useState('upcoming');
 
   const today = new Date();
   today.setHours(0,0,0,0);
 
   const displayedBookings = bookings.filter((booking) => {
-    if (showPast) return true;
+    // bookingView options:
+    // 'upcoming' -> show bookings with endDate >= today and not cancelled
+    // 'all' -> show all bookings
+    // 'past_cancelled' -> show past bookings (endDate < today) and include cancelled bookings
     try {
       const end = new Date(booking.endDate);
-      end.setHours(0,0,0,0);
-      return end >= today;
+      end.setHours(0, 0, 0, 0);
+
+      if (bookingView === 'all') return true;
+
+      if (bookingView === 'upcoming') {
+        if (booking.cancelled) return false;
+        return end >= today;
+      }
+
+      if (bookingView === 'past_cancelled') {
+        return booking.cancelled || end < today;
+      }
+
+      return true;
     } catch (e) {
       return true;
     }
@@ -31,8 +46,12 @@ function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, u
 
       <h3>All Bookings</h3>
       <div className="mb-3 d-flex align-items-center">
-        <label className="me-2">Show past bookings</label>
-        <input type="checkbox" checked={showPast} onChange={(e) => setShowPast(e.target.checked)} />
+        <label className="me-2">Booking view</label>
+        <select className="form-select w-auto" value={bookingView} onChange={(e) => setBookingView(e.target.value)}>
+          <option value="upcoming">Upcoming only</option>
+          <option value="all">All bookings</option>
+          <option value="past_cancelled">Past (include cancelled)</option>
+        </select>
       </div>
       <table className="table table-striped">
         <thead>
@@ -54,7 +73,11 @@ function AdminPanel({ bookings, properties, users, cancelBooking, addProperty, u
                 <td>{booking.name}</td>
                 <td>{booking.startDate} to {booking.endDate}</td>
                 <td>
-                  <button className="btn btn-danger btn-sm" onClick={() => cancelBooking(booking.id)}>Cancel</button>
+                  {booking.cancelled ? (
+                    <span className="text-muted">Cancelled</span>
+                  ) : (
+                    <button className="btn btn-danger btn-sm" onClick={() => cancelBooking(booking.id)}>Cancel</button>
+                  )}
                 </td>
               </tr>
             );

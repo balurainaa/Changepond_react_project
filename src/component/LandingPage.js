@@ -1,9 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function LandingPage({ properties = [] }) {
   const featuredItems = properties.length > 0 ? properties.slice(0, 3) : [];
   const carouselItems = properties.length > 0 ? properties.slice(0, 5) : [];
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
+  const prevCarousel = () => {
+    if (!carouselItems || carouselItems.length === 0) return;
+    setCarouselIndex((i) => (i - 1 + carouselItems.length) % carouselItems.length);
+  };
+
+  const nextCarousel = () => {
+    if (!carouselItems || carouselItems.length === 0) return;
+    setCarouselIndex((i) => (i + 1) % carouselItems.length);
+  };
+
+  const translatePercent = carouselItems && carouselItems.length > 0 ? carouselIndex * 100 : 0;
 
   useEffect(() => {
     // Safely initialize carousel if Bootstrap is loaded
@@ -145,7 +158,30 @@ function LandingPage({ properties = [] }) {
           </div>
 
           {featuredItems.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '30px', marginBottom: '40px' }}>
+            <>
+              {/* Carousel: shows image + place + name (no price) */}
+              {carouselItems.length > 0 && (
+                <div style={{ position: 'relative', marginBottom: '30px' }}>
+                  <div style={{ position: 'relative', overflow: 'hidden', borderRadius: 12 }}>
+                    <div style={{ display: 'flex', transition: 'transform 0.5s ease', transform: `translateX(-${translatePercent}%)` }}>
+                      {carouselItems.map((p) => (
+                        <div key={p.id} style={{ minWidth: '100%', height: 320, position: 'relative' }}>
+                          <img src={p.image} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                          <div style={{ position: 'absolute', left: 20, bottom: 20, background: 'rgba(0,0,0,0.55)', color: 'white', padding: '10px 16px', borderRadius: 8 }}>
+                            <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{p.name}</div>
+                            <div style={{ opacity: 0.9, fontSize: '0.95rem' }}>📍 {p.state}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button onClick={prevCarousel} aria-label="Previous" style={{ position: 'absolute', top: '50%', left: 8, transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.45)', color: 'white', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer' }}>‹</button>
+                  <button onClick={nextCarousel} aria-label="Next" style={{ position: 'absolute', top: '50%', right: 8, transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.45)', color: 'white', border: 'none', borderRadius: '50%', width: 40, height: 40, cursor: 'pointer' }}>›</button>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '30px', marginBottom: '40px' }}>
               {featuredItems.map((property) => (
                 <div
                   key={property.id}
@@ -264,38 +300,10 @@ function LandingPage({ properties = [] }) {
                 </div>
               ))}
             </div>
+            </>
           ) : null}
 
-          {/* View All CTA */}
-          <div style={{ textAlign: 'center' }}>
-            <Link
-              to="/properties"
-              style={{
-                display: 'inline-block',
-                padding: '16px 50px',
-                background: '#ff6b6b',
-                color: 'white',
-                borderRadius: '8px',
-                fontWeight: '700',
-                textDecoration: 'none',
-                fontSize: '1.05rem',
-                boxShadow: '0 4px 15px rgba(255, 107, 107, 0.3)',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = '#ff5252';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 25px rgba(255, 107, 107, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = '#ff6b6b';
-                e.target.style.transform = 'none';
-                e.target.style.boxShadow = '0 4px 15px rgba(255, 107, 107, 0.3)';
-              }}
-            >
-              View All Properties →
-            </Link>
-          </div>
+          {/* Removed 'View All Properties' CTA per request */}
         </div>
       </div>
 
@@ -371,5 +379,6 @@ function LandingPage({ properties = [] }) {
     </div>
   );
 }
+
 
 export default LandingPage;

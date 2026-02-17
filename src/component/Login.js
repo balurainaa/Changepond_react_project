@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import data from "../data.json";
 
-function Login({ setIsLoggedIn, setIsAdmin }) {
+function Login({ setIsLoggedIn, setIsAdmin, setUser }) {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
@@ -25,7 +25,7 @@ function Login({ setIsLoggedIn, setIsAdmin }) {
     if (user) {
       setIsLoggedIn(true);
       setIsAdmin(user.isAdmin);
-      
+      setUser && setUser(user);
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/");
     } else {

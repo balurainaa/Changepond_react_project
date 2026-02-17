@@ -160,15 +160,16 @@ function AdminPropertyManager({ properties, addProperty, updateProperty, deleteP
             </div>
 
             <div className="form-group">
-              <label>Image URL</label>
+              <label>Image Path or URL</label>
               <input
-                type="url"
+                type="text"
                 name="image"
                 className="form-control"
                 value={formData.image}
                 onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
+                placeholder="/images/your-image.jpg or https://example.com/image.jpg"
               />
+              <small className="text-muted">You can use a relative path from the `public` folder (e.g. <i>/images/photo.jpg</i>) or a full URL.</small>
             </div>
 
             <div className="form-actions">

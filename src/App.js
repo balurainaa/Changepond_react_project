@@ -13,6 +13,7 @@ import LandingPage from "./component/LandingPage";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [user, setUser] = useState(null);
 
   const [properties, setProperties] = useState(data.properties);
 
@@ -51,6 +52,7 @@ function App() {
       const parsedUser = JSON.parse(user);
       setIsLoggedIn(true);
       setIsAdmin(parsedUser.isAdmin);
+      setUser(parsedUser);
     }
   }, []);
 
@@ -90,15 +92,14 @@ function App() {
       }
 
       const overlap = bookings.some((existing) => {
+        // ignore cancelled bookings when checking for overlap
+        if (existing.cancelled) return false;
+        if (String(existing.propertyId) !== String(newBooking.propertyId)) return false;
         const es = new Date(existing.startDate);
         const ee = new Date(existing.endDate);
         es.setHours(0,0,0,0);
         ee.setHours(0,0,0,0);
-        return (
-          existing.propertyId === newBooking.propertyId &&
-          s <= ee &&
-          e >= es
-        );
+        return s <= ee && e >= es;
       });
 
       if (overlap) {
@@ -106,7 +107,14 @@ function App() {
         return;
       }
 
-      setBookings([...bookings, { ...newBooking, id: Date.now() }]);
+      const currentUser = JSON.parse(localStorage.getItem('user')) || user;
+      const bookingWithUser = {
+        ...newBooking,
+        id: Date.now(),
+        userId: currentUser ? currentUser.id : null,
+        userEmail: currentUser ? currentUser.email : (newBooking.email || null),
+      };
+      setBookings([...bookings, bookingWithUser]);
     } catch (err) {
       alert('Invalid dates provided.');
       return;
@@ -114,7 +122,10 @@ function App() {
   };
 
   const cancelBooking = (id) => {
-    setBookings(bookings.filter((booking) => booking.id !== id));
+    const updated = bookings.map((booking) =>
+      booking.id === id ? { ...booking, cancelled: true, cancelledAt: new Date().toISOString() } : booking
+    );
+    setBookings(updated);
   };
 
   const addProperty = (newProperty) => {
@@ -170,12 +181,25 @@ function App() {
       <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} isAdmin={isAdmin} setIsAdmin={setIsAdmin} />
       <div className="container mt-4">
         <Routes>
-          <Route path="/" element={isLoggedIn ? <PropertyList properties={properties} isLoggedIn={isLoggedIn} /> : <LandingPage />} />
+          <Route path="/" element={isLoggedIn ? <PropertyList properties={properties} isLoggedIn={isLoggedIn} /> : <LandingPage properties={properties} />} />
           <Route path="/properties" element={<PropertyList properties={properties} isLoggedIn={isLoggedIn} />} />
-          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setIsAdmin={setIsAdmin} setUser={setUser} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/book" element={isLoggedIn ? <BookingForm properties={properties} addBooking={addBooking} /> : <Navigate to="/login" />} />
-          <Route path="/bookings" element={isLoggedIn ? <BookingList bookings={bookings} cancelBooking={cancelBooking} properties={properties} /> : <Navigate to="/login" />} />
+          <Route
+            path="/bookings"
+            element={
+              isLoggedIn ? (
+                <BookingList
+                  bookings={isAdmin ? bookings : bookings.filter(b => b.userEmail === (user && user.email))}
+                  cancelBooking={cancelBooking}
+                  properties={properties}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
           <Route path="/admin" element={isLoggedIn && isAdmin ? <AdminPanel bookings={bookings} properties={properties} users={users} cancelBooking={cancelBooking} addProperty={addProperty} updateProperty={updateProperty} deleteProperty={deleteProperty} deleteUser={deleteUser} /> : <Navigate to="/" />} />
         </Routes>
       </div>

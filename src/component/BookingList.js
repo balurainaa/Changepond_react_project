@@ -15,6 +15,10 @@ function BookingList({ bookings, cancelBooking, properties }) {
     );
 
     if (confirmCancel) {
+      if (booking.cancelled) {
+        alert('This booking is already cancelled.');
+        return;
+      }
       cancelBooking(id);
       alert("Booking cancelled successfully.");
     }
@@ -40,12 +44,11 @@ function BookingList({ bookings, cancelBooking, properties }) {
                       <strong>Booked by:</strong> {booking.name}<br />
                       <strong>Price:</strong> ₹{property ? property.price : "N/A"}
                     </p>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleCancel(booking.id)}
-                    >
-                      Cancel Booking
-                    </button>
+                    {booking.cancelled ? (
+                      <button className="btn btn-secondary" disabled>Cancelled</button>
+                    ) : (
+                      <button className="btn btn-danger" onClick={() => handleCancel(booking.id)}>Cancel Booking</button>
+                    )}
                   </div>
                 </div>
               </div>
